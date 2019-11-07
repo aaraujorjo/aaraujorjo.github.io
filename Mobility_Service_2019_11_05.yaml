@@ -1,0 +1,623 @@
+openapi: 3.0.0
+info:
+  description: "\n\n# Introduction\nWelcome Partner Mobility Service Support API. This API needs authentication.\n\n *aaaaa" 
+  version: 1.0.0
+  title: Mobility Service
+  termsOfService: "https://vg8br.com/terms"
+  contact:
+    name: "Vg8 API"
+    url: "https://vg8br.com/api"
+    email: "tecnologia@vg8.com"
+  license:
+    name: "License"
+    url: "https://vg8br.com/pricing"
+externalDocs:
+  description: API Documentation
+  url: https://vg8brasil.bitbucket.io/
+servers:
+  - url: 'https://api.vg8br.com/sb/mobility-service/v1'
+    description: Sandbox
+tags:
+  - name: customer
+    description: This feature is responsible for customer management.
+paths:
+  /customers:
+    post:
+      tags:
+        - customer
+      summary: Creates a new customer instance
+      description: 'This operation will save the information in the given payload and immediately create a new "customer" instance. It will also trigger the background operations for account information storage, tag requision and plan subscription.'
+      parameters:
+        - in: header
+          name: client_id
+          description: App identifier registered in the portal.
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: access_token
+          description: Access token.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerCreated'
+      responses:
+        '200':
+          description: The request was carried out successfuly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerCreated'
+        '400':
+          description: The given payload had at least one schema violation or a business error occured
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  '/customers/{id}':  
+    get:
+      tags:
+        - customer
+      summary: Get a customer by id
+      description: "This operation will return a customer's information by its id"
+      parameters:
+        - in: header
+          name: client_id
+          description: App identifier registered in the portal.
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: access_token
+          description: Access token.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          description: Customer Id.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request was carried out successfuly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: The given payload had at least one schema violation or a business error occured
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: The request by customer id was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  '/customers/{id}/plans/{plan-id}/vehicles':
+    post:
+      tags:
+        - customer
+      summary: Creates a new vehicle instance under a customer
+      description: 'This operation will create an instance of Vehicle, bound to a customer and an existing plan.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Vehicle'
+        required: true
+      responses:
+        '200':
+          description: The request was carried out successfuly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        '400':
+          description: The given payload had at least one schema violation or a business error occured
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    parameters:
+      - in: header
+        name: client_id
+        description: App identifier registered in the portal.
+        required: true
+        schema:
+          type: string
+      - in: header
+        name: access_token
+        description: Access token.
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: id
+        description: Customer id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: plan-id
+        description: Plan id
+        required: true
+        schema:
+          type: string
+  '/customers/{id}/plans/{plan-id}/vehicles/{vehicle-id}':
+    delete:
+      tags:
+        - customer
+      summary: Removes a vehicle from a customer
+      description: 'This operation will remove an instance of Vehicle, bound to a customer'
+      responses:
+        '204':
+          description: The request was carried out successfuly. This operation returns an empty body.
+        '400':
+          description: The given payload had at least one schema violation or a business error occured
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: An unexpected error occurred
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    parameters:
+      - in: header
+        name: client_id
+        description: App identifier registered in the portal.
+        required: true
+        schema:
+          type: string
+      - in: header
+        name: access_token
+        description: Access token.
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Customer id
+        required: true
+        schema:
+          type: string
+      - name: vehicle-id
+        in: path
+        description: Vehicle id
+        required: true
+        schema:
+          type: string
+      - name: plan-id
+        in: path
+        description: Plan id
+        required: true
+        schema:
+          type: string
+      - name: reason-id
+        in: query
+        description: Reason id
+        required: true
+        schema:
+          type: string
+  '/customers/{id}/transactions':
+    get:
+      tags:
+        - customer
+      summary: Paged List of Customer Parking and Toll Transactions
+      description: This operation will search the customer's parking and toll transactions.
+      responses:
+        '200':
+          description: The request was carried out successfuly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        '400':
+          description: The given payload had at least one schema violation or a business error occured
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    parameters:
+      - in: header
+        name: client_id
+        description: App identifier registered in the portal.
+        required: true
+        schema:
+          type: string
+      - in: header
+        name: access_token
+        description: Access token.
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: id
+        description: Customer id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: _offset
+        description: Offset for pagination
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: _limit
+        description: Total record limit. 10 Max
+        required: false
+        schema:
+          type: string
+components:
+  schemas:
+    Vehicle:
+      type: object
+      required:
+        - categoryId
+        - licensePlateCode
+        - plan
+      properties:
+        id:
+          type: integer
+          example: 11
+          description: Uniquely identifies a single instance of a Vehicle. This attribute is only returned by the POST operation and is not taken into account in PUT / PATCH operations.
+          minimum: 1
+        plan:
+          type: object
+          description: This object identifies the plan associated with the given vehicle.
+          properties:
+            id:
+              type: integer
+              example: 13
+              description: An existing plan id.
+        licensePlateCode:
+          type: string
+          example: KLM9876
+          description: A sequence of alpha numeric characters that compose a vehicle's license plate.
+        tagCode:
+          type: string
+          example: A1B2C3
+          description: 'A sequence of alpha numeric characters that compose a vehicle''s tag, to be activated and associated with the given vehicle.'
+        categoryId:
+          type: integer
+          example: 2
+          description: An integer value indicating what kind of vehicle this is.
+      description: This object is the restful representation of a vehicle
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 23
+          description: Customer identification - This number is computed at the moment of instance creation and is returned in the response body after a POST. It is not part of the creation payload.
+          minimum: 1
+        cpf:
+          type: string
+          example: '89508231017'
+          description: Brazilian natural person identification number - A number used to identify a person in the brazilian national persons registry.
+        name:
+          type: string
+          example: João da Silva
+          description: Natural person name of a customer.
+        email:
+          type: string
+          example: joao.silva@teste.com
+          description: Natural person name of a customer.
+        gender:
+          type: string
+          example: M
+          description: Gender of a customer.
+        phoneNumber:
+          type: string
+          example: '5199998899'
+          description: Phone number of a customer.
+        birthDate:
+          type: string
+          example: '1990-01-20'
+          description: Date of Birth of a customer.
+        deliveryAddress:
+          type: object
+          description: An address object used to deliver physical mail.
+          properties:
+            zip:
+              type: string
+              format: '^\d{8}$'
+              example: '23016670'
+              description: The postal code used to identify an urban area.
+            addressLine:
+              type: string
+              example: St. Silvester Street
+              description: A single line of text containing the name of the public place such as the street name.
+            number:
+              type: integer
+              example: 314
+              description: The street number within a zip.
+            complement:
+              type: string
+              example: Room 271
+              description: 'Any complementary information used to identify a place such as "apartment number", "room number", "floor number", ...'
+            district:
+              type: string
+              example: James Island
+              description: Specifies the name of a neighbourhood or district within a city.
+            city:
+              type: string
+              example: Charleston
+              description: The name of a city.
+            state:
+              type: string
+              example: SC
+              description: The name of a state within a country.
+          required:
+            - addressLine
+            - city
+            - complement
+            - district
+            - number
+            - state
+            - zip
+      description: This object is the restful representation of a customer.
+    CustomerCreated:
+      type: object
+      required:
+        - cpf
+        - name
+      properties:
+        id:
+          type: integer
+          example: 23
+          description: Customer identification - This number is computed at the moment of instance creation and is returned in the response body after a POST. It is not part of the creation payload.
+          minimum: 1
+        cpf:
+          type: string
+          example: '89508231017'
+          description: Brazilian natural person identification number - A number used to identify a person in the brazilian national persons registry.
+        name:
+          type: string
+          example: João da Silva
+          description: Natural person name of a customer.
+        email:
+          type: string
+          example: joao.silva@teste.com
+          description: Natural person name of a customer.
+        gender:
+          type: string
+          example: M
+          description: Gender of a customer.
+        phoneNumber:
+          type: string
+          example: '5199998899'
+          description: Phone number of a customer.
+        birthDate:
+          type: string
+          example: '1990-01-20'
+        tagRequisition:
+          type: object
+          description: 'Request for automobile identification tags - This structure is added to the payload if the customer requires identification tags to be placed in his vehicles. If this is structure is present, then the "deliveryAddress" becomes mandatory and failure to conform to this rule will generate a HTTP 400 response.'
+          properties:
+            numberOfVehicles:
+              type: integer
+              example: 4
+              description: Number of tags to be sent to the customer.
+              minimum: 1
+              maximum: 10
+        paymentOptions:
+          type: object
+          description: 'Specifies the payment method used to charge the customer, in relation to some given plans.'
+          properties:
+            directDebit:
+              type: array
+              description: A list of debit accounts associated with plans.
+              items:
+                type: object
+                properties:
+                  assignedPlans:
+                    type: array
+                    example:
+                      - 1
+                      - 2
+                      - 3
+                    description: A list of integers identifying plans to which the customer should be subscribed.
+                    items:
+                      type: integer
+                  bankNumber:
+                    type: string
+                    example: '120'
+                    description: The number of the bank.
+                  branchNumber:
+                    type: string
+                    example: '0002'
+                    description: The bank branch in which the customer has an account.
+                  checkingAccountNumber:
+                    type: string
+                    example: P16180339
+                    description: The number of the customer's bank account.
+        deliveryAddress:
+          type: object
+          description: An address object used to deliver physical mail.
+          properties:
+            zip:
+              type: string
+              format: '^\d{8}$'
+              example: '23016670'
+              description: The postal code used to identify an urban area.
+            addressLine:
+              type: string
+              example: St. Silvester Street
+              description: A single line of text containing the name of the public place such as the street name.
+            number:
+              type: integer
+              example: 314
+              description: The street number within a zip.
+            complement:
+              type: string
+              example: Room 271
+              description: 'Any complementary information used to identify a place such as "apartment number", "room number", "floor number", ...'
+            district:
+              type: string
+              example: James Island
+              description: Specifies the name of a neighbourhood or district within a city.
+            city:
+              type: string
+              example: Charleston
+              description: The name of a city.
+            state:
+              type: string
+              example: SC
+              description: The name of a state within a country.
+          required:
+            - addressLine
+            - city
+            - complement
+            - district
+            - number
+            - state
+            - zip
+      description: This object is the restful representation of a customer.
+    GrantCodeSuccess:
+      type: object
+      properties:
+        redirect_uri:
+          type: string
+          example: 'https://api.vg8br.com/sb?code=ad430f8e-4e5d-3c9d-8e33-ffa28555c23f'
+          description: Grant Code for environment
+    BadRequestGrantCodeError:
+      type: object
+      properties:
+        result:
+          type: string
+          example: failure
+        errors:
+          type: object
+          properties:
+            path:
+              type: string
+              example: /path
+            type:
+              type: string
+              example: INVALID
+            message:
+              type: string
+              example: Invalid client_id!
+            errorCode:
+              type: string
+              example: 400
+        status:
+          type: integer
+          example: 400
+    NotFound:
+      type: object
+      properties:
+        message:
+          type: string
+          example: 'Customer not found'
+    NotFoundGrantCodeError:
+      type: string
+      example: 'Could not route request: http://api.vg8br.com/hlg/oauth/grant-code'
+    AccessTokenSuccess:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: 64497234-4afb-3401-ab2d-004d6adb647f
+        refresh_token:
+          type: string
+          example: d360e64b-acfb-32bf-ba69-c3494bb11786
+        token_type:
+          type: string
+          example: access_token
+        errorCode:
+          type: integer
+          example: 3600
+    BadRequestAccessToken:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Missing Authorization header
+    BadRequestError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Payload rejected
+          description: A generic message string with a summary of the problem.
+        details:
+          type: array
+          example:
+            - customer.name.required
+            - customer.tagRequisition.numberOfVehicles.aboveMaximum
+          description: 'A list of error tokens, specifiyng individual errors found.'
+          items:
+            type: string
+            format: ^\w+(\.\w+)*$
+      description: This error object describes the problems found during payload validation by the server.
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Internal server error
+          description: A simple error message.
+      description: This error indicates that the server has encountered an unexpected unrecoverable error.
+  securitySchemes:
+    BasicAuth:
+      description: |
+        You can create a JSON Web Token (JWT) via our [JWT Session resource](https://rebilly.github.io/RebillyUserAPI/#tag/JWT-Session/paths/~1signin/post).
+        Usage format: `Bearer <JWT>`
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    PublishableApiKey:
+      description: |
+        Only for the Tokens resource.
+        You can create a Publishable API Key via our [API Keys resource](https://rebilly.github.io/RebillyUserAPI/#tag/API-Keys), by specifying the type as `publishable`.
+      name: Authorization
+      type: apiKey
+      in: header
+    SecretApiKey:
+      description: |
+        When you sign up for an account, you are given your first secret API key.
+        To do so please [follow this link.](https://app.rebilly.com/signup)
+        Also you can generate additional API keys, and delete API keys (as you may
+        need to rotate your keys in the future). All API keys can be restricted to a
+        small set of permissions (restricted API keys).
+      name: REB-APIKEY
+      type: apiKey
+      in: header

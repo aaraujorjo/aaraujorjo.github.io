@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ReDoc</title>
+    <!-- needed for adaptive design -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+	<div id="redoc_container" />
+    <script src="https://redocpro-cdn.redoc.ly/v1.0.0-beta.18/redocpro-standalone.min.js"> </script>
+	<script>
+      RedocPro.init(
+        'Mobility_Service_2019_11_05.yaml',
+        {
+			"showConsole":true,
+			"layout":{"scope":"section"},
+			"theme":{
+				"logo":{"gutter":"20px 30px 14px 30px"},
+				"colors":{"text":{"primary":"#333333"}},
+				"typography":{"headings":{"fontFamily":"Roboto"},
+				"fontFamily":"Roboto, Verdana, Geneva, sans-serif",
+				"fontSize":"14px",
+				"code":{"fontFamily":"\"Courier New\",monospace",
+				"tokens":{
+					"token.property":{"color":"#aofbaa"},
+					"string":{"color":"#aofbaa"}}},
+					"rightPanelHeading":{"color":"white"}},
+					"rightPanel":{"backgroundColor":"#263238"},
+					"links":{"color":"#6CC496"}},
+					"redocURL":"https://redocpro-cdn.redoc.ly/v1.0.0-beta.18/redocpro-standalone.min.js",
+					"redocExport":"RedocPro"
+		},
+        document.getElementById("redoc_container")
+      );
+    </script>
+  </body>
+</html>
